@@ -27,12 +27,19 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
-
-      - name: Install Android SDK
+      - name: Configure Android SDK
         run: |
-          sdkmanager "platforms;android-35" "build-tools;35.0.0"
+          SDK_ROOT="${ANDROID_HOME:-${ANDROID_SDK_ROOT:-/usr/local/lib/android/sdk}}"
+          echo "ANDROID_HOME=$SDK_ROOT" >> "$GITHUB_ENV"
+          echo "ANDROID_SDK_ROOT=$SDK_ROOT" >> "$GITHUB_ENV"
+          SDKMANAGER=$(find "$SDK_ROOT/cmdline-tools" -type f -name sdkmanager | sort -V | tail -n 1)
+          if [ -z "$SDKMANAGER" ]; then
+            echo "sdkmanager not found"
+            exit 1
+          fi
+          echo "$(dirname "$SDKMANAGER")" >> "$GITHUB_PATH"
+          yes | "$SDKMANAGER" --licenses || true
+          "$SDKMANAGER" "platforms;android-35" "build-tools;35.0.0"
 
       - name: Install Gradle 8.7
         run: |
@@ -53,8 +60,7 @@ jobs:
               raise SystemExit("Invalid package name")
 
           app = pathlib.Path("android-template/app/build.gradle")
-          content = app.read_text().replace("__PACKAGE__", pkg)
-          app.write_text(content)
+          app.write_text(app.read_text().replace("__PACKAGE__", pkg))
 
           name = xml.sax.saxutils.escape(os.environ["APP_NAME"])
           pathlib.Path("android-template/app/src/main/res/values/strings.xml").write_text(
@@ -62,7 +68,6 @@ jobs:
               '<resources><string name="app_name">' + name + '</string></resources>'
           )
           PY
-
           mkdir -p android-template/app/src/main/assets
           cp test-project/index.html android-template/app/src/main/assets/index.html
 
@@ -75,5 +80,4 @@ jobs:
           name: html-to-apk
           path: android-template/app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
-
 
