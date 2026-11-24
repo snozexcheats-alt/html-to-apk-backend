@@ -1,284 +1,339 @@
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#080b14">
 <title>HTML TO APK CONVERTOR</title>
 
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;600;700;800&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+
 <style>
-* {
-  box-sizing: border-box;
+*{box-sizing:border-box}
+:root{
+--blue:#00c8ff;
+--purple:#8264ff;
+--bg:#080b14;
+--panel:#111b2b;
+--muted:#94a4ba;
 }
-
-body {
-  margin: 0;
-  background: #0b1020;
-  color: #eef3ff;
-  font-family: system-ui, Arial, sans-serif;
+body{
+margin:0;
+min-height:100vh;
+color:#fff;
+font-family:'Rajdhani',sans-serif;
+background:radial-gradient(ellipse at top,#15365a 0%,transparent 48%),linear-gradient(145deg,#070a12,#0b1020);
 }
-
-.wrap {
-  max-width: 780px;
-  margin: auto;
-  padding: 20px;
+header{
+text-align:center;
+padding:23px 12px;
+background:#080d18dd;
+border-bottom:1px solid #00c8ff40;
 }
-
-.hero {
-  text-align: center;
-  padding: 20px 0;
+.logo{
+font:800 clamp(20px,5vw,29px) 'Orbitron',sans-serif;
+letter-spacing:2px;
+text-shadow:0 0 15px #00c8ff;
 }
-
-.hero h1 {
-  font-size: 30px;
+.logo span{color:var(--blue)}
+.tagline{
+font-size:12px;
+letter-spacing:3px;
+color:var(--muted);
+margin-top:8px;
 }
-
-.hero span {
-  color: #69aaff;
+main{width:min(540px,92%);margin:32px auto 45px}
+.hero{text-align:center;margin-bottom:25px}
+.hero-icon{
+width:82px;height:82px;
+margin:0 auto 17px;
+display:grid;place-items:center;
+border:1px solid var(--blue);
+border-radius:22px;
+font-size:39px;
+background:linear-gradient(145deg,#183651,#111528);
+box-shadow:0 0 30px #00c8ff30;
 }
-
-.card {
-  background: #151e31;
-  border: 1px solid #293750;
-  border-radius: 18px;
-  padding: 18px;
-  margin: 14px 0;
+h1{
+font:700 clamp(19px,5vw,27px) 'Orbitron',sans-serif;
+margin:0 0 10px;
 }
-
-.label {
-  font-size: 13px;
-  color: #aab8d0;
-  margin: 14px 0 6px;
+.hero p{color:var(--muted);font-size:17px}
+.card{
+padding:23px;
+background:linear-gradient(145deg,#142033,#0c1422);
+border:1px solid #00c8ff40;
+border-radius:18px;
+box-shadow:0 15px 45px #0006;
 }
-
-input {
-  width: 100%;
-  padding: 12px;
-  border-radius: 11px;
-  background: #0d1525;
-  border: 1px solid #2b3b56;
-  color: white;
+label{
+display:block;
+font-size:16px;
+font-weight:700;
+margin:17px 0 8px;
 }
-
-button {
-  width: 100%;
-  border: 0;
-  border-radius: 12px;
-  padding: 14px;
-  background: linear-gradient(90deg,#488eff,#785aff);
-  color: white;
-  font-weight: 800;
-  margin-top: 16px;
+input{
+width:100%;
+padding:13px;
+background:#080e1a;
+color:white;
+border:1px solid #29415a;
+border-radius:10px;
+outline:none;
+font:600 16px 'Rajdhani',sans-serif;
 }
-
-button:disabled {
-  opacity: 0.6;
+input:focus{border-color:var(--blue)}
+.upload{
+display:block;
+padding:23px 12px;
+text-align:center;
+border:1px dashed #00c8ff90;
+background:#071625;
+border-radius:12px;
+cursor:pointer;
 }
-
-#status {
-  margin-top: 14px;
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-  font-size: 13px;
-  color: #b7c8e5;
+.upload strong{
+display:block;
+font-size:19px;
+color:var(--blue);
 }
-
-.small {
-  font-size: 12px;
-  color: #95a5c2;
-  line-height: 1.5;
+.upload small{color:var(--muted)}
+.upload input{display:none}
+.file-name{
+color:#9deaff;
+font-size:14px;
+margin-top:10px;
+overflow-wrap:anywhere;
 }
-
-.download {
-  display: none;
-  color: #9dc4ff;
-  margin-top: 14px;
-  display: block;
+button{
+width:100%;
+padding:15px;
+margin-top:23px;
+border:0;
+border-radius:11px;
+background:linear-gradient(90deg,#00c8ff,#8065ff);
+color:#06111c;
+font:800 15px 'Orbitron',sans-serif;
+cursor:pointer;
+box-shadow:0 0 22px #00c8ff35;
 }
-
-.download[hidden] {
-  display: none;
+button:disabled{opacity:.5}
+.status{
+display:none;
+margin-top:20px;
+padding:15px;
+background:#080e1a;
+border:1px solid #00c8ff40;
+border-radius:12px;
 }
+.status h3{color:var(--blue);margin:0 0 9px}
+#message{font-size:16px;overflow-wrap:anywhere}
+#logs{
+color:#a9b9cc;
+font-size:12px;
+max-height:150px;
+overflow:auto;
+white-space:pre-wrap;
+}
+.download{
+display:none;
+margin-top:15px;
+padding:13px;
+text-align:center;
+background:#0d392c;
+color:#7dffc2;
+border-radius:10px;
+text-decoration:none;
+font-size:18px;
+font-weight:700;
+}
+.note{
+text-align:center;
+color:var(--muted);
+font-size:14px;
+}
+footer{
+text-align:center;
+padding:25px 12px;
+background:#070b13;
+border-top:1px solid #00c8ff30;
+color:#9aabc0;
+font-size:15px;
+}
+.developer{
+font:700 16px 'Orbitron',sans-serif;
+color:var(--blue);
+margin:10px 0;
+}
+.channel{
+display:inline-block;
+margin-top:9px;
+padding:11px 19px;
+border:1px solid #00c8ff;
+border-radius:9px;
+color:#00c8ff;
+text-decoration:none;
+font-weight:700;
+}
+.channel:hover{background:#00c8ff18}
 </style>
 </head>
 
 <body>
 
-<div class="wrap">
+<header>
+<div class="logo">HTML <span>TO APK</span></div>
+<div class="tagline">NEXT GENERATION APP BUILDER</div>
+</header>
 
-  <div class="hero">
-    <h1>HTML TO <span>APK</span> CONVERTOR</h1>
-    <p class="small">
-      Upload your HTML or ZIP project and build a real Android APK.
-    </p>
-  </div>
+<main>
 
-  <form id="form" class="card">
+<section class="hero">
+<div class="hero-icon">⚡</div>
+<h1>BUILD YOUR ANDROID APP</h1>
+<p>Convert your HTML project into an Android APK.</p>
+</section>
 
-    <div class="label">HTML file or ZIP project</div>
+<section class="card">
 
-    <input
-      id="project"
-      name="project"
-      type="file"
-      accept=".html,.htm,.zip"
-      required
-    >
+<form id="form">
 
-    <div class="label">App name</div>
+<label>01 / SELECT PROJECT</label>
 
-    <input
-      name="appName"
-      value="My First App"
-      maxlength="40"
-      required
-    >
+<label class="upload">
+<strong>＋ Choose HTML or ZIP</strong>
+<small>Upload .html, .htm or .zip project</small>
+<input id="project" type="file" name="project" accept=".html,.htm,.zip" required>
+<div class="file-name" id="fileName">No file selected</div>
+</label>
 
-    <div class="label">Package name</div>
+<label for="appName">02 / APP NAME</label>
+<input id="appName" name="appName" value="My First App" maxlength="40" required>
 
-    <input
-      name="packageName"
-      value="com.snoze.myfirstapp"
-      required
-    >
+<label for="packageName">03 / PACKAGE NAME</label>
+<input id="packageName" name="packageName" value="com.snoze.myfirstapp" required>
 
-    <button id="build" type="submit">
-      Build APK
-    </button>
+<button id="buildBtn" type="submit">⚡ BUILD APK NOW</button>
 
-    <div id="status"></div>
+</form>
 
-    <a id="download" class="download" hidden>
-      Download APK
-    </a>
-
-    <p class="small">
-      ZIP must include index.html.
-      Building may take several minutes.
-    </p>
-
-  </form>
+<div class="status" id="status">
+<h3 id="statusTitle">BUILD STATUS</h3>
+<div id="message">Preparing...</div>
+<pre id="logs"></pre>
+<a class="download" id="download" href="#">⬇ DOWNLOAD APK</a>
 </div>
 
+<p class="note">Build time depends on project size and server resources.</p>
+
+</section>
+</main>
+
+<footer>
+<div>HTML TO APK CONVERTOR</div>
+<div class="developer">DEVELOPED BY SNOZE MODZ</div>
+<div>For updates and support, join our channel</div>
+<a class="channel"
+href="https://whatsapp.com/channel/0029Vb7gPeh35fLz2gereI0S"
+target="_blank" rel="noopener noreferrer">
+JOIN WHATSAPP CHANNEL ↗
+</a>
+</footer>
+
 <script>
-const form = document.getElementById("form");
-const statusEl = document.getElementById("status");
-const download = document.getElementById("download");
-const button = document.getElementById("build");
+const form=document.getElementById('form');
+const project=document.getElementById('project');
+const fileName=document.getElementById('fileName');
+const buildBtn=document.getElementById('buildBtn');
+const statusBox=document.getElementById('status');
+const statusTitle=document.getElementById('statusTitle');
+const message=document.getElementById('message');
+const logs=document.getElementById('logs');
+const download=document.getElementById('download');
 
-form.addEventListener("submit", async function(event) {
+project.addEventListener('change',()=>{
+fileName.textContent=project.files[0]?.name||'No file selected';
+});
 
-  event.preventDefault();
+function showStatus(title,msg,log=''){
+statusBox.style.display='block';
+statusTitle.textContent=title;
+message.textContent=msg;
+logs.textContent=log;
+}
 
-  const fileInput = document.getElementById("project");
+form.addEventListener('submit',async(e)=>{
+e.preventDefault();
 
-  if (!fileInput.files || fileInput.files.length === 0) {
-    statusEl.textContent = "Please select an HTML or ZIP file.";
-    return;
-  }
+const file=project.files[0];
+if(!file)return alert('Please select an HTML or ZIP file.');
 
-  button.disabled = true;
-  download.hidden = true;
-  statusEl.textContent = "Uploading project... Please wait.";
+const packageName=document.getElementById('packageName').value.trim();
 
-  try {
+if(!/^[a-zA-Z][a-zA-Z0-9_]*(\.[a-zA-Z][a-zA-Z0-9_]*)+$/.test(packageName)){
+return alert('Enter a valid package name, e.g. com.example.app');
+}
 
-    const formData = new FormData(form);
+const data=new FormData();
+data.append('project',file);
+data.append('appName',document.getElementById('appName').value.trim());
+data.append('packageName',packageName);
 
-    const response = await fetch("/api/build", {
-      method: "POST",
-      body: formData
-    });
+buildBtn.disabled=true;
+download.style.display='none';
+showStatus('BUILD STARTED','Uploading your project...');
 
-    const data = await response.json();
+try{
+const response=await fetch('/api/build',{
+method:'POST',
+body:data
+});
 
-    if (!response.ok) {
-      throw new Error(data.error || "Upload failed.");
-    }
+const result=await response.json();
 
-    if (!data.buildId) {
-      throw new Error("Backend did not return a build ID.");
-    }
+if(!response.ok)throw new Error(result.error||result.message||'Upload failed');
 
-    const buildId = data.buildId;
+const id=result.id||result.buildId;
+if(!id)throw new Error('Server did not return a build ID.');
 
-    statusEl.textContent = "Upload successful!\nBuild started...";
+showStatus('BUILD IN PROGRESS','Your APK is being generated...');
 
-    let attempts = 0;
-    const maxAttempts = 150;
+let complete=false;
 
-    async function checkBuild() {
+for(let i=0;i<300;i++){
+await new Promise(resolve=>setTimeout(resolve,3000));
 
-      try {
+const check=await fetch('/api/build/'+encodeURIComponent(id));
+const state=await check.json();
+const status=String(state.status||'').toLowerCase();
 
-        const result = await fetch("/api/build/" + buildId);
-        const buildData = await result.json();
+showStatus('BUILD IN PROGRESS',state.message||status||'Building APK...',state.log||'');
 
-        if (!result.ok) {
-          throw new Error(buildData.error || "Could not check build.");
-        }
+if(['done','completed','success'].includes(status)){
+download.href='/api/build/'+encodeURIComponent(id)+'/apk';
+download.style.display='block';
+showStatus('BUILD COMPLETED','Your APK is ready to download.',state.log||'');
+complete=true;
+break;
+}
 
-        statusEl.textContent =
-          "Build status: " + buildData.status +
-          (buildData.error ? "\n" + buildData.error : "") +
-          (buildData.log ? "\n\n" + buildData.log.slice(-2000) : "");
+if(['failed','error'].includes(status)){
+throw new Error(state.error||state.message||'Build failed. Check logs.');
+}
+}
 
-        if (buildData.status === "success") {
+if(!complete)throw new Error('Build is taking too long. Check server logs.');
 
-          download.href = "/api/build/" + buildId + "/apk";
-          download.textContent = "Download Your APK";
-          download.hidden = false;
-
-          button.disabled = false;
-          statusEl.textContent += "\n\nAPK successfully created!";
-
-          return;
-        }
-
-        if (buildData.status === "failed") {
-          button.disabled = false;
-          statusEl.textContent += "\n\nBuild failed. Check the error above.";
-          return;
-        }
-
-        attempts++;
-
-        if (attempts >= maxAttempts) {
-          button.disabled = false;
-          statusEl.textContent += "\n\nChecking timed out. The build may still be running.";
-          return;
-        }
-
-        setTimeout(checkBuild, 3000);
-
-      } catch (error) {
-
-        attempts++;
-
-        if (attempts >= maxAttempts) {
-          button.disabled = false;
-          statusEl.textContent = "Error checking build: " + error.message;
-          return;
-        }
-
-        statusEl.textContent = "Waiting for backend response...";
-
-        setTimeout(checkBuild, 5000);
-      }
-    }
-
-    checkBuild();
-
-  } catch (error) {
-
-    statusEl.textContent = "ERROR: " + error.message;
-    button.disabled = false;
-
-  }
-
+}catch(err){
+showStatus('BUILD FAILED',err.message);
+}finally{
+buildBtn.disabled=false;
+}
 });
 </script>
 
 </body>
-  </html>
-  
+</html>
+
