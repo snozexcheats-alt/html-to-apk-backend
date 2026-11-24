@@ -81,8 +81,8 @@ function runGradle(dir, id) {
     const proc = spawn("gradle", ["--no-daemon", "assembleDebug"], { cwd: dir, env: { ...process.env, ANDROID_HOME: process.env.ANDROID_HOME || "/opt/android-sdk" } });
     let log = "";
     const timer = setTimeout(() => { proc.kill("SIGTERM"); reject(new Error("Build timed out. Try a smaller project or retry.")); }, TIMEOUT);
-    proc.stdout.on("data", d => { log += d.toString(); builds.get(id).log = log.slice(-12000); });
-    proc.stderr.on("data", d => { log += d.toString(); builds.get(id).log = log.slice(-12000); });
+    proc.stdout.on("data", d => { log += d.toString(); builds.get(id).log = log.slice(-12000); console.log(d.toString()); });
+    proc.stderr.on("data", d => { log += d.toString(); builds.get(id).log = log.slice(-12000); console.log(d.toString()); });
     proc.on("error", e => { clearTimeout(timer); reject(e); });
     proc.on("close", code => {
       clearTimeout(timer);
