@@ -1,0 +1,79 @@
+
+name: Build HTML to APK
+
+on:
+  workflow_dispatch:
+    inputs:
+      app_name:
+        description: App Name
+        required: true
+        default: My HTML App
+      package_name:
+        description: Package Name
+        required: true
+        default: com.snoze.htmlapp
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android SDK
+        run: |
+          sdkmanager "platforms;android-35" "build-tools;35.0.0"
+
+      - name: Install Gradle 8.7
+        run: |
+          curl -fsSL https://services.gradle.org/distributions/gradle-8.7-bin.zip -o gradle.zip
+          unzip -q gradle.zip -d /opt
+          echo "/opt/gradle-8.7/bin" >> "$GITHUB_PATH"
+
+      - name: Prepare Android project
+        env:
+          APP_NAME: ${{ inputs.app_name }}
+          PACKAGE_NAME: ${{ inputs.package_name }}
+        run: |
+          python3 - <<'PY'
+          import os, re, pathlib, xml.sax.saxutils
+
+          pkg = os.environ["PACKAGE_NAME"]
+          if not re.fullmatch(r"[a-zA-Z][a-zA-Z0-9_]*(\.[a-zA-Z][a-zA-Z0-9_]*)+", pkg):
+              raise SystemExit("Invalid package name")
+
+          app = pathlib.Path("android-template/app/build.gradle")
+          content = app.read_text().replace("__PACKAGE__", pkg)
+          app.write_text(content)
+
+          name = xml.sax.saxutils.escape(os.environ["APP_NAME"])
+          pathlib.Path("android-template/app/src/main/res/values/strings.xml").write_text(
+              '<?xml version="1.0" encoding="utf-8"?>\n'
+              '<resources><string name="app_name">' + name + '</string></resources>'
+          )
+          PY
+
+          mkdir -p android-template/app/src/main/assets
+          cp test-project/index.html android-template/app/src/main/assets/index.html
+
+      - name: Build APK
+        run: gradle -p android-template --no-daemon assembleDebug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: html-to-apk
+          path: android-template/app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
+
+
