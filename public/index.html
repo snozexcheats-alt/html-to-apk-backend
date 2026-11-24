@@ -1,21 +1,284 @@
-<!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>HTML TO APK CONVERTOR</title>
-<style>
-*{box-sizing:border-box}body{margin:0;background:#0b1020;color:#eef3ff;font-family:system-ui,Arial}.wrap{max-width:780px;margin:auto;padding:20px}.hero{text-align:center;padding:20px 0}.hero h1{font-size:32px}.hero span{color:#69aaff}.card{background:#151e31;border:1px solid #293750;border-radius:18px;padding:16px;margin:14px 0}.label{font-size:13px;color:#aab8d0;margin:12px 0 6px}input{width:100%;padding:12px;border-radius:11px;background:#0d1525;border:1px solid #2b3b56;color:white}button{width:100%;border:0;border-radius:12px;padding:14px;background:linear-gradient(90deg,#488eff,#785aff);color:white;font-weight:800;margin-top:14px}#status{margin-top:14px;white-space:pre-wrap;font-size:13px;color:#b7c8e5}.small{font-size:12px;color:#95a5c2;line-height:1.5}.download{display:none;color:#9dc4ff;margin-top:14px}
-</style></head><body><div class="wrap"><div class="hero"><h1>HTML TO <span>APK</span> CONVERTOR</h1><p class="small">Upload your HTML or ZIP project and build a real Android APK.</p></div>
-<form id="form" class="card"><div class="label">HTML file or ZIP project</div><input name="project" type="file" accept=".html,.htm,.zip" required>
-<div class="label">App name</div><input name="appName" value="My HTML App" maxlength="40" required>
-<div class="label">Package name</div><input name="packageName" value="com.htmltoapk.myapp" required>
-<button id="build" type="submit">Build APK</button><div id="status"></div><a id="download" class="download">Download APK</a>
-<p class="small">ZIP must include index.html. The build runs on the backend and may take several minutes.</p></form>
-</div><script>
-const form=document.querySelector('#form'),statusEl=document.querySelector('#status'),download=document.querySelector('#download'),button=document.querySelector('#build');
-form.addEventListener('submit',async e=>{e.preventDefault();download.style.display='none';button.disabled=true;statusEl.textContent='Uploading project…';
-try{const fd=new FormData(form);const r=await fetch('/api/build',{method:'POST',body:fd});const d=await r.json();if(!r.ok)throw new Error(d.error||'Upload failed');statusEl.textContent='Build queued…';const id=d.buildId;
-let tries=0;const poll=async()=>{const s=await fetch('/api/build/'+id);const v=await s.json();statusEl.textContent='Build status: '+v.status+(v.error?'
-'+v.error:'')+(v.log?'
 
-'+v.log.slice(-2500):'');if(v.status==='success'){download.href='/api/build/'+id+'/apk';download.download='html-app-debug.apk';download.textContent='Download your APK';download.style.display='block';button.disabled=false;}else if(v.status==='failed'){button.disabled=false;}else if(++tries<120){setTimeout(poll,3000);}else{statusEl.textContent+=' 
-Polling timed out. Check again later.';button.disabled=false;}};poll();
-}catch(err){statusEl.textContent=err.message;button.disabled=false;}});
-</script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HTML TO APK CONVERTOR</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #0b1020;
+  color: #eef3ff;
+  font-family: system-ui, Arial, sans-serif;
+}
+
+.wrap {
+  max-width: 780px;
+  margin: auto;
+  padding: 20px;
+}
+
+.hero {
+  text-align: center;
+  padding: 20px 0;
+}
+
+.hero h1 {
+  font-size: 30px;
+}
+
+.hero span {
+  color: #69aaff;
+}
+
+.card {
+  background: #151e31;
+  border: 1px solid #293750;
+  border-radius: 18px;
+  padding: 18px;
+  margin: 14px 0;
+}
+
+.label {
+  font-size: 13px;
+  color: #aab8d0;
+  margin: 14px 0 6px;
+}
+
+input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 11px;
+  background: #0d1525;
+  border: 1px solid #2b3b56;
+  color: white;
+}
+
+button {
+  width: 100%;
+  border: 0;
+  border-radius: 12px;
+  padding: 14px;
+  background: linear-gradient(90deg,#488eff,#785aff);
+  color: white;
+  font-weight: 800;
+  margin-top: 16px;
+}
+
+button:disabled {
+  opacity: 0.6;
+}
+
+#status {
+  margin-top: 14px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 13px;
+  color: #b7c8e5;
+}
+
+.small {
+  font-size: 12px;
+  color: #95a5c2;
+  line-height: 1.5;
+}
+
+.download {
+  display: none;
+  color: #9dc4ff;
+  margin-top: 14px;
+  display: block;
+}
+
+.download[hidden] {
+  display: none;
+}
+</style>
+</head>
+
+<body>
+
+<div class="wrap">
+
+  <div class="hero">
+    <h1>HTML TO <span>APK</span> CONVERTOR</h1>
+    <p class="small">
+      Upload your HTML or ZIP project and build a real Android APK.
+    </p>
+  </div>
+
+  <form id="form" class="card">
+
+    <div class="label">HTML file or ZIP project</div>
+
+    <input
+      id="project"
+      name="project"
+      type="file"
+      accept=".html,.htm,.zip"
+      required
+    >
+
+    <div class="label">App name</div>
+
+    <input
+      name="appName"
+      value="My First App"
+      maxlength="40"
+      required
+    >
+
+    <div class="label">Package name</div>
+
+    <input
+      name="packageName"
+      value="com.snoze.myfirstapp"
+      required
+    >
+
+    <button id="build" type="submit">
+      Build APK
+    </button>
+
+    <div id="status"></div>
+
+    <a id="download" class="download" hidden>
+      Download APK
+    </a>
+
+    <p class="small">
+      ZIP must include index.html.
+      Building may take several minutes.
+    </p>
+
+  </form>
+</div>
+
+<script>
+const form = document.getElementById("form");
+const statusEl = document.getElementById("status");
+const download = document.getElementById("download");
+const button = document.getElementById("build");
+
+form.addEventListener("submit", async function(event) {
+
+  event.preventDefault();
+
+  const fileInput = document.getElementById("project");
+
+  if (!fileInput.files || fileInput.files.length === 0) {
+    statusEl.textContent = "Please select an HTML or ZIP file.";
+    return;
+  }
+
+  button.disabled = true;
+  download.hidden = true;
+  statusEl.textContent = "Uploading project... Please wait.";
+
+  try {
+
+    const formData = new FormData(form);
+
+    const response = await fetch("/api/build", {
+      method: "POST",
+      body: formData
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "Upload failed.");
+    }
+
+    if (!data.buildId) {
+      throw new Error("Backend did not return a build ID.");
+    }
+
+    const buildId = data.buildId;
+
+    statusEl.textContent = "Upload successful!\nBuild started...";
+
+    let attempts = 0;
+    const maxAttempts = 150;
+
+    async function checkBuild() {
+
+      try {
+
+        const result = await fetch("/api/build/" + buildId);
+        const buildData = await result.json();
+
+        if (!result.ok) {
+          throw new Error(buildData.error || "Could not check build.");
+        }
+
+        statusEl.textContent =
+          "Build status: " + buildData.status +
+          (buildData.error ? "\n" + buildData.error : "") +
+          (buildData.log ? "\n\n" + buildData.log.slice(-2000) : "");
+
+        if (buildData.status === "success") {
+
+          download.href = "/api/build/" + buildId + "/apk";
+          download.textContent = "Download Your APK";
+          download.hidden = false;
+
+          button.disabled = false;
+          statusEl.textContent += "\n\nAPK successfully created!";
+
+          return;
+        }
+
+        if (buildData.status === "failed") {
+          button.disabled = false;
+          statusEl.textContent += "\n\nBuild failed. Check the error above.";
+          return;
+        }
+
+        attempts++;
+
+        if (attempts >= maxAttempts) {
+          button.disabled = false;
+          statusEl.textContent += "\n\nChecking timed out. The build may still be running.";
+          return;
+        }
+
+        setTimeout(checkBuild, 3000);
+
+      } catch (error) {
+
+        attempts++;
+
+        if (attempts >= maxAttempts) {
+          button.disabled = false;
+          statusEl.textContent = "Error checking build: " + error.message;
+          return;
+        }
+
+        statusEl.textContent = "Waiting for backend response...";
+
+        setTimeout(checkBuild, 5000);
+      }
+    }
+
+    checkBuild();
+
+  } catch (error) {
+
+    statusEl.textContent = "ERROR: " + error.message;
+    button.disabled = false;
+
+  }
+
+});
+</script>
+
+</body>
+  </html>
+  
