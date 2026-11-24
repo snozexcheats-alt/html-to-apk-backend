@@ -103,6 +103,7 @@ app.post("/api/build", upload.fields([{ name: "project", maxCount: 1 }, { name: 
     fs.mkdirSync(work, { recursive: true });
     copyTemplate(work);
     const assetsDir = path.join(work, "app", "src", "main", "assets");
+    fs.mkdirSync(assetsDir, { recursive: true });
     copyHtmlUpload(project, assetsDir);
     writeGradleSettings(work, pkg, label);
     builds.set(id, { status: "queued", log: "", work, created: Date.now() });
